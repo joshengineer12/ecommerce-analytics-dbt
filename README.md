@@ -757,11 +757,11 @@ Approximately 5 hours for complete implementation including:
 
 ### What I Would Improve With More Time
 
-1. ~~**CI/CD Pipeline**: Add GitHub Actions for automated testing~~ ✅ Implemented
+1. **CI/CD Pipeline**: Add GitHub Actions for automated testing ✅ Implemented
 2. **Data Contracts**: Implement dbt contracts for schema enforcement
 3. **Metrics Layer**: Add semantic layer with dbt metrics
 4. **More Snapshots**: Track order status changes over time
-5. ~~**Performance Benchmarking**: Document query execution times~~ ✅ Implemented
+5. **Performance Benchmarking**: Document query execution times ✅ Implemented
 
 ### Challenges and Solutions
 
