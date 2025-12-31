@@ -1,0 +1,108 @@
+version: 2
+
+models:
+  - name: mart_product_performance
+    description: >
+      Product performance mart with sales, return, and profitability metrics.
+      Provides comprehensive product-level analytics for merchandising decisions.
+
+      **Grain**: One row per product
+      **Materialization**: Table with post-hook logging
+      **Update Frequency**: Daily
+
+      ## Business Context
+      This mart enables product performance analysis including:
+      - Sales volume and revenue tracking
+      - Return rate monitoring and quality issue identification
+      - Profitability analysis by product
+
+      ## Example Query
+      ```sql
+      SELECT product_id, product_name, category, total_quantity_sold,
+             total_revenue, total_returns, return_rate, gross_profit, profit_margin
+      FROM mart_product_performance
+      WHERE return_rate > 0.10
+      ORDER BY return_rate DESC;
+      ```
+
+    config:
+      tags: ['marts', 'core', 'product']
+
+    columns:
+      - name: product_id
+        description: Primary key - unique product identifier
+        data_tests:
+          - unique
+          - not_null
+
+      - name: product_name
+        description: Product display name
+        data_tests:
+          - not_null
+
+      - name: category
+        description: Product category (Electronics, Office, Furniture, Home)
+
+      - name: category_group
+        description: Broader category grouping
+
+      - name: supplier_id
+        description: Supplier identifier
+
+      - name: unit_cost
+        description: Product cost from supplier (USD)
+
+      - name: total_quantity_sold
+        description: Total units sold across all orders
+
+      - name: total_revenue
+        description: Gross revenue from product sales (USD)
+
+      - name: total_orders
+        description: Number of distinct orders containing this product
+
+      - name: unique_customers
+        description: Number of distinct customers who purchased
+
+      - name: total_returns
+        description: Number of units returned
+
+      - name: return_rate
+        description: >
+          Return rate as decimal (e.g., 0.10 = 10%).
+          Calculated as: total_returns / total_quantity_sold
+
+      - name: gross_profit
+        description: Total gross profit (revenue - cost) (USD)
+
+      - name: profit_margin
+        description: >
+          Profit margin as decimal (e.g., 0.50 = 50%).
+          Calculated as: gross_profit / total_revenue
+
+      - name: avg_selling_price
+        description: Average selling price (USD)
+
+      - name: net_revenue
+        description: Revenue after refunds (USD)
+
+      - name: total_refund_amount
+        description: Total refunds issued (USD)
+
+      - name: quality_issue_returns
+        description: Returns due to defects or shipping damage
+
+      - name: quality_issue_pct
+        description: Percentage of returns that are quality-related
+
+      - name: performance_tier
+        description: >
+          Product classification:
+          - Star: High revenue, low return rate
+          - Strong: Good revenue
+          - Average: Moderate revenue
+          - Underperforming: Low revenue
+          - No Sales: Never sold
+
+      - name: _updated_at
+        description: Timestamp of last model refresh
