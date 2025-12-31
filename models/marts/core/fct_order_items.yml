@@ -1,0 +1,120 @@
+version: 2
+
+models:
+  - name: fct_order_items
+    description: >
+      Order line item fact table with granular transaction details.
+      Provides item-level analysis for product performance, basket
+      analysis, and detailed revenue attribution.
+
+      **Grain**: One row per order line item
+      **Materialization**: Table
+      **Filter**: Completed orders only
+
+      ## Business Context
+      Lowest grain transactional fact table. Use for product mix analysis,
+      cross-sell/upsell patterns, and granular return analysis.
+
+      ## Conformed Dimensions
+      - dim_customers (customer_id)
+      - dim_products (product_id)
+      - dim_date (order_date_id)
+
+      ## Key Measures
+      - gross_amount: Line item revenue
+      - gross_profit: Line item profit
+      - net_revenue: Revenue after any refund
+
+    config:
+      tags: ['marts', 'core', 'fact', 'order_items']
+
+    columns:
+      - name: order_item_id
+        description: Primary key - unique line item identifier
+        data_tests:
+          - unique
+          - not_null
+
+      - name: order_id
+        description: Foreign key to fct_orders
+        data_tests:
+          - not_null
+
+      - name: product_id
+        description: Foreign key to mart_product_performance
+        data_tests:
+          - not_null
+
+      - name: customer_id
+        description: Foreign key to dim_customers
+
+      - name: order_date_id
+        description: Foreign key to dim_date
+
+      - name: product_name
+        description: Product name (denormalized for convenience)
+
+      - name: category
+        description: Product category (denormalized)
+
+      - name: category_group
+        description: Product category group (denormalized)
+
+      - name: supplier_id
+        description: Supplier identifier
+
+      - name: quantity
+        description: Units ordered
+        data_tests:
+          - not_null
+
+      - name: unit_price
+        description: Price per unit at purchase time (USD)
+
+      - name: unit_cost
+        description: Product cost (USD)
+
+      - name: gross_amount
+        description: Line item total (quantity * unit_price) (USD)
+
+      - name: gross_profit
+        description: Line item profit (USD)
+
+      - name: gross_margin_pct
+        description: Line item margin percentage
+
+      - name: is_returned
+        description: Boolean - item was returned
+
+      - name: return_id
+        description: Return ID if applicable
+
+      - name: return_date
+        description: Date of return if applicable
+
+      - name: return_reason
+        description: Return reason code if applicable
+
+      - name: return_reason_category
+        description: Categorized return reason if applicable
+
+      - name: refund_amount
+        description: Refund amount if returned (USD)
+
+      - name: is_quality_issue
+        description: Return was due to quality issue
+
+      - name: net_revenue
+        description: Revenue after refund (USD)
+
+      - name: order_status
+        description: Parent order status
+
+      - name: is_completed
+        description: Parent order completed (always true)
+
+      - name: order_month
+        description: Order date truncated to month
+
+      - name: _updated_at
+        description: Timestamp of last model refresh

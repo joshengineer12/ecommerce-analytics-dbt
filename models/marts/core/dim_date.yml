@@ -1,0 +1,106 @@
+version: 2
+
+models:
+  - name: dim_date
+    description: >
+      Date dimension table for time-based analysis.
+      Contains all dates in the analysis period with various date attributes
+      for flexible aggregation and filtering.
+
+      **Grain**: One row per calendar date
+      **Materialization**: Table
+      **Date Range**: 2023-01-01 to 2023-12-31
+
+      ## Business Context
+      Standard date dimension enabling consistent time-based analysis across
+      all fact tables. Supports fiscal periods, relative date filtering,
+      and time intelligence calculations.
+
+      ## Usage
+      Join fact tables on date columns to this dimension for rich time analysis.
+      Use is_current_month, is_weekend etc. for dynamic filtering.
+
+    config:
+      tags: ['marts', 'core', 'dimension', 'date']
+
+    columns:
+      - name: date_id
+        description: Primary key - the calendar date
+        data_tests:
+          - unique
+          - not_null
+
+      - name: year
+        description: Four-digit year (e.g., 2023)
+
+      - name: month
+        description: Month number (1-12)
+
+      - name: day
+        description: Day of month (1-31)
+
+      - name: quarter
+        description: Quarter number (1-4)
+
+      - name: week_of_year
+        description: ISO week number (1-53)
+
+      - name: day_of_week
+        description: Day of week (0=Sunday, 6=Saturday)
+
+      - name: day_of_year
+        description: Day of year (1-366)
+
+      - name: month_name
+        description: Full month name (e.g., 'January')
+
+      - name: month_short
+        description: Abbreviated month name (e.g., 'Jan')
+
+      - name: day_name
+        description: Full day name (e.g., 'Monday')
+
+      - name: day_short
+        description: Abbreviated day name (e.g., 'Mon')
+
+      - name: year_month
+        description: Year-month string for grouping (e.g., '2023-05')
+
+      - name: year_quarter
+        description: Year-quarter string for grouping (e.g., '2023-Q2')
+
+      - name: week_start_date
+        description: First day (Monday) of the week
+
+      - name: week_end_date
+        description: Last day (Sunday) of the week
+
+      - name: month_start_date
+        description: First day of the month
+
+      - name: month_end_date
+        description: Last day of the month
+
+      - name: quarter_start_date
+        description: First day of the quarter
+
+      - name: quarter_end_date
+        description: Last day of the quarter
+
+      - name: is_weekend
+        description: Boolean - true for Saturday and Sunday
+
+      - name: is_weekday
+        description: Boolean - true for Monday through Friday
+
+      - name: is_today
+        description: Boolean - true if date equals current date
+
+      - name: is_yesterday
+        description: Boolean - true if date equals yesterday
+
+      - name: is_current_month
+        description: Boolean - true if date is in current calendar month
+
+      - name: is_current_quarter
+        description: Boolean - true if date is in current quarter

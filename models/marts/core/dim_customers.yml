@@ -1,0 +1,125 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: >
+      Customer dimension with lifetime metrics and segmentation.
+      Primary customer master table for all analytics use cases.
+
+      **Grain**: One row per customer
+      **Materialization**: Table with post-hook logging
+      **Update Frequency**: Daily
+
+      ## Business Context
+      This dimension combines customer demographic data with behavioral metrics
+      derived from order history. Supports customer segmentation, lifetime
+      value analysis, and churn prediction.
+
+      ## Example Query
+      ```sql
+      SELECT customer_id, email, customer_segment, total_orders, total_revenue,
+             avg_order_value, first_order_date, last_order_date, days_since_last_order
+      FROM dim_customers
+      WHERE customer_segment = 'Premium'
+      ORDER BY total_revenue DESC
+      LIMIT 10;
+      ```
+
+    config:
+      tags: ['marts', 'core', 'dimension', 'customer']
+
+    columns:
+      - name: customer_id
+        description: Primary key - unique customer identifier
+        data_tests:
+          - unique
+          - not_null
+
+      - name: email
+        description: Customer email address
+        data_tests:
+          - unique
+          - not_null
+
+      - name: customer_segment
+        description: Customer segment (Premium, Standard, Basic)
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['Premium', 'Standard', 'Basic']
+
+      - name: country
+        description: Customer's country
+
+      - name: region
+        description: Geographic region
+
+      - name: signup_date
+        description: Date customer created account
+
+      - name: total_orders
+        description: Total number of completed orders
+
+      - name: total_revenue
+        description: Total revenue from completed orders (USD)
+
+      - name: avg_order_value
+        description: Average order value (USD)
+
+      - name: first_order_date
+        description: Date of first order
+
+      - name: last_order_date
+        description: Date of most recent order
+
+      - name: days_since_last_order
+        description: Days since customer's last order (null if never ordered)
+
+      - name: lifetime_orders
+        description: Total orders including cancelled
+
+      - name: cancelled_orders
+        description: Number of cancelled orders
+
+      - name: total_net_revenue
+        description: Revenue after refunds (USD)
+
+      - name: total_gross_profit
+        description: Total gross profit (USD)
+
+      - name: avg_items_per_order
+        description: Average items per order
+
+      - name: total_returned_items
+        description: Total items returned
+
+      - name: total_refunds
+        description: Total refund amount (USD)
+
+      - name: orders_with_returns
+        description: Orders with at least one return
+
+      - name: customer_tier
+        description: >
+          Behavioral tier based on purchase patterns:
+          - VIP: Revenue >= $500 AND orders >= 3
+          - Loyal: Revenue >= $200 OR orders >= 2
+          - Active: At least 1 order
+          - New: No orders yet
+
+      - name: activity_status
+        description: >
+          Current activity status:
+          - Active: Ordered within 30 days
+          - At Risk: Last order 31-90 days ago
+          - Churned: No order in 90+ days
+          - Never Ordered: No purchase history
+
+      - name: days_as_customer
+        description: Days since signup
+
+      - name: is_repeat_customer
+        description: True if customer has more than one completed order
+
+      - name: _updated_at
+        description: Timestamp of last model refresh
