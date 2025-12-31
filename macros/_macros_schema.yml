@@ -1,0 +1,113 @@
+version: 2
+
+macros:
+  - name: extract_email_domain
+    description: >
+      Extracts the domain portion from an email address.
+      Returns everything after the @ symbol.
+    arguments:
+      - name: email_column
+        type: string
+        description: The column containing email addresses
+
+  - name: get_region
+    description: >
+      Maps country names to geographic regions.
+      Used for regional aggregations and reporting.
+    arguments:
+      - name: country_column
+        type: string
+        description: The column containing country names
+
+  - name: date_trunc
+    description: >
+      Truncates a date to the specified precision.
+      Cross-database compatible wrapper for date_trunc function.
+    arguments:
+      - name: datepart
+        type: string
+        description: The precision to truncate to (day, week, month, quarter, year)
+      - name: date_column
+        type: string
+        description: The column containing the date to truncate
+
+  - name: datediff
+    description: >
+      Calculates the difference between two dates in the specified unit.
+      Cross-database compatible implementation.
+    arguments:
+      - name: start_date
+        type: string
+        description: The start date column or expression
+      - name: end_date
+        type: string
+        description: The end date column or expression
+      - name: datepart
+        type: string
+        description: The unit to measure difference in (day, week, month, year)
+
+  - name: generate_surrogate_key
+    description: >
+      Generates a surrogate key by hashing multiple columns.
+      Creates a unique identifier from a combination of business keys.
+    arguments:
+      - name: columns
+        type: list
+        description: List of column names to combine into a surrogate key
+
+  - name: safe_divide
+    description: >
+      Performs division with protection against divide-by-zero errors.
+      Returns a default value when denominator is zero or null.
+    arguments:
+      - name: numerator
+        type: string
+        description: The numerator expression
+      - name: denominator
+        type: string
+        description: The denominator expression
+      - name: default
+        type: string
+        description: Value to return when division is not possible (default 0)
+
+  - name: cents_to_dollars
+    description: >
+      Converts an amount from cents to dollars.
+      Useful when source systems store monetary values in cents.
+    arguments:
+      - name: column_name
+        type: string
+        description: The column containing amount in cents
+      - name: precision
+        type: integer
+        description: Number of decimal places (default 2)
+
+  - name: dollars_to_cents
+    description: >
+      Converts an amount from dollars to cents.
+      Returns an integer value.
+    arguments:
+      - name: column_name
+        type: string
+        description: The column containing amount in dollars
+
+  - name: grant_select
+    description: >
+      Grants SELECT permission on the current model to a specified role.
+      Use as a post-hook on models for access control.
+    arguments:
+      - name: role
+        type: string
+        description: The database role to grant access to
+
+  - name: grant_select_on_schemas
+    description: >
+      Grants SELECT permission on all tables in specified schemas.
+      Useful for bulk permission management.
+    arguments:
+      - name: schemas
+        type: list
+        description: List of schema names
+      - name: role
+        type: string
+        description: The database role to grant access to
