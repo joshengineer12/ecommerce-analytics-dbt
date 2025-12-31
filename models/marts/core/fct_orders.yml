@@ -1,0 +1,124 @@
+version: 2
+
+models:
+  - name: fct_orders
+    description: >
+      Order fact table with enriched customer and product dimensions.
+      Core transactional fact table for order-level analytics.
+
+      **Grain**: One row per order
+      **Materialization**: Incremental (merge strategy)
+      **Update Frequency**: Continuous / Daily
+
+      ## Incremental Strategy
+      This model uses an incremental materialization with merge strategy:
+      - **Why Incremental**: Order data grows continuously; full refresh is expensive at scale
+      - **Unique Key**: order_id
+      - **Late-Arriving Data**: Looks back 3 days to capture returns and status changes
+      - **Full Refresh**: Run with `--full-refresh` weekly or after schema changes
+
+      ## Example Query
+      ```sql
+      SELECT order_id, order_date, customer_email, customer_segment, order_status,
+             total_items, total_quantity, subtotal, is_returned, days_to_return
+      FROM fct_orders
+      WHERE is_returned = TRUE
+      ORDER BY order_date DESC
+      LIMIT 5;
+      ```
+
+    config:
+      tags: ['marts', 'core', 'fact', 'orders', 'incremental']
+
+    columns:
+      - name: order_id
+        description: Primary key - unique order identifier
+        data_tests:
+          - unique
+          - not_null
+
+      - name: user_id
+        description: Foreign key to customer
+
+      - name: order_date
+        description: Date order was placed
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: date
+
+      - name: customer_email
+        description: Customer email address (denormalized)
+        data_tests:
+          - dbt_expectations.expect_column_values_to_match_regex:
+              regex: "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$"
+
+      - name: customer_segment
+        description: Customer segment (Premium, Standard, Basic)
+
+      - name: country
+        description: Customer country
+
+      - name: region
+        description: Customer region
+
+      - name: order_status
+        description: Order status (completed, cancelled)
+
+      - name: is_completed
+        description: Boolean - order completed
+
+      - name: is_cancelled
+        description: Boolean - order cancelled
+
+      - name: total_items
+        description: Number of distinct line items in order
+
+      - name: total_quantity
+        description: Total units ordered
+
+      - name: subtotal
+        description: Order total (USD)
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 10000  # Reasonable upper bound for single order
+
+      - name: is_returned
+        description: Boolean - order has at least one returned item
+
+      - name: days_to_return
+        description: Days between order date and first return (null if no returns)
+
+      - name: refund_amount
+        description: Total refunds for this order (USD)
+
+      - name: net_revenue
+        description: Revenue after refunds (USD)
+
+      - name: gross_profit
+        description: Gross profit (USD)
+
+      - name: avg_gross_margin_pct
+        description: Average margin percentage
+
+      - name: is_high_value_order
+        description: Order >= $200 threshold
+
+      - name: is_multi_item_order
+        description: Order has more than one line item
+
+      - name: order_month
+        description: Order date truncated to month
+
+      - name: order_week
+        description: Order date truncated to week
+
+      - name: day_of_week
+        description: Day of week (0=Sunday)
+
+      - name: days_since_signup
+        description: Customer tenure at time of order
+
+      - name: _updated_at
+        description: Timestamp of last model refresh
