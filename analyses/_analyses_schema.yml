@@ -1,0 +1,50 @@
+version: 2
+
+analyses:
+  - name: executive_summary
+    description: >
+      High-level KPIs for executive leadership reporting.
+      Provides a single-row summary of key business metrics including
+      revenue, customer counts, margins, and return rates.
+    config:
+      tags: ['executive', 'kpi']
+
+  - name: top_products_by_revenue
+    description: >
+      Identifies the top 20 products by net revenue.
+      Includes profitability metrics, return rates, and performance rankings.
+      Useful for inventory planning and merchandising decisions.
+    config:
+      tags: ['product', 'revenue']
+
+  - name: customer_segmentation_summary
+    description: >
+      Aggregates customers by RFM segment with key metrics.
+      Shows customer count, revenue contribution, and recommended actions
+      for each segment. Essential for marketing strategy.
+    config:
+      tags: ['marketing', 'segmentation']
+
+  - name: weekly_revenue_trend
+    description: >
+      Weekly revenue analysis with week-over-week growth calculations.
+      Includes cumulative revenue and moving averages for trend identification.
+      Used for financial forecasting and anomaly detection.
+    config:
+      tags: ['finance', 'trends']
+
+  - name: return_analysis
+    description: >
+      Deep dive into product returns by multiple dimensions.
+      Analyzes returns by reason, category, customer segment, and supplier.
+      Critical for quality control and operational improvements.
+    config:
+      tags: ['operations', 'quality']
+
+  - name: cohort_retention_matrix
+    description: >
+      Customer retention matrix by signup cohort.
+      Shows retention rates and cumulative LTV over time.
+      Formatted for easy visualization in BI tools.
+    config:
+      tags: ['marketing', 'retention']
