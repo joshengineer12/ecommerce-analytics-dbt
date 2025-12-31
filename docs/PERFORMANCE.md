@@ -33,7 +33,7 @@ Slowest Models:
 2. fct_orders         - 0.35s (incremental merge)
 3. fct_rfm_analysis   - 0.25s (window functions)
 4. dim_date           - 0.20s (date spine generation)
-5. mart_product_perf  - 0.18s (product aggregations)
+5. mart_product_performance - 0.18s (product aggregations)
 ```
 
 ### Projected Production Performance

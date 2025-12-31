@@ -81,7 +81,7 @@ A production-ready dbt project for e-commerce analytics, demonstrating data mode
                                                │ 1:N
                                                ▼
 ┌─────────────────────┐            ┌─────────────────────┐            ┌─────────────────────┐
-│      dim_date       │            │     fct_orders      │            │ mart_product_perf   │
+│      dim_date       │            │     fct_orders      │            │mart_product_perform.│
 ├─────────────────────┤            ├─────────────────────┤            ├─────────────────────┤
 │ date_id (PK)        │◀───────────│ order_id (PK)       │            │ product_id (PK)     │
 │ year                │            │ user_id (FK)        │            │ product_name        │
