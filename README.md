@@ -25,17 +25,22 @@ A production-ready dbt project for e-commerce analytics, demonstrating data mode
 ### High-Level Data Pipeline
 
 ```
-SOURCES (Seeds)  →  STAGING (stg_*)  →  INTERMEDIATE (int_*)  →  MARTS (dim_/fct_)
-─────────────────────────────────────────────────────────────────────────────────
-
-• raw_users          • stg_users          • int_orders_enriched    • dim_customers
-• raw_products       • stg_products       • int_customer_orders    • dim_products
-• raw_orders         • stg_orders         • int_product_           • dim_date
-• raw_order_items    • stg_order_items      performance            • fct_orders
-• raw_returns        • stg_returns                                 • fct_rfm_analysis
-                                                                   • mart_product_performance
-                                                                   • mart_executive_summary
-                                                                   • mart_daily_sales
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                            DATA PIPELINE OVERVIEW                               │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                 │
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌───────────────┐  │
+│  │   SOURCES    │───▶│   STAGING    │───▶│ INTERMEDIATE │───▶│    MARTS      │  │
+│  │  (CSV Seeds) │    │   (stg_*)    │    │   (int_*)    │    │  (dim_/fct_)  │  │
+│  └──────────────┘    └──────────────┘    └──────────────┘    └───────────────┘  │
+│                                                                                 │
+│  • raw_users         • stg_users         • int_orders_       • dim_customers   │
+│  • raw_products      • stg_products        enriched          • fct_orders      │
+│  • raw_orders        • stg_orders        • int_customer_     • mart_product_   │
+│  • raw_order_items   • stg_order_items     orders              performance     │
+│  • raw_returns       • stg_returns       • int_product_      • fct_rfm_analysis│
+│                                             performance                        │
+└─────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Technology Stack
