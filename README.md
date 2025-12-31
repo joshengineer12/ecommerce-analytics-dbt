@@ -34,12 +34,12 @@ A production-ready dbt project for e-commerce analytics, demonstrating data mode
 │  │  (CSV Seeds) │    │   (stg_*)    │    │   (int_*)    │    │  (dim_/fct_)  │  │
 │  └──────────────┘    └──────────────┘    └──────────────┘    └───────────────┘  │
 │                                                                                 │
-│  • raw_users         • stg_users         • int_orders_       • dim_customers    │
-│  • raw_products      • stg_products        enriched          • fct_orders       │
-│  • raw_orders        • stg_orders        • int_customer_     • mart_product_    │
+│  • raw_users         • stg_users         • int_orders_       • dim_customers   │
+│  • raw_products      • stg_products        enriched          • fct_orders      │
+│  • raw_orders        • stg_orders        • int_customer_     • mart_product_   │
 │  • raw_order_items   • stg_order_items     orders              performance     │
-│  • raw_returns       • stg_returns       • int_product_      • fct_rfm_analysis │
-│                                            performance                         │
+│  • raw_returns       • stg_returns       • int_product_      • fct_rfm_analysis│
+│                                             performance                        │
 └─────────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -748,7 +748,7 @@ ORDER BY 1;
 
 ### Time Spent
 
-Approximately 5 hours for complete implementation including:
+Approximately 3.5 hours for complete implementation including:
 - Project structure and configuration
 - All models (staging, intermediate, marts)
 - Testing and documentation
