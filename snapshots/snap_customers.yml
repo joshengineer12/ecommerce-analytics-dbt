@@ -1,0 +1,36 @@
+version: 2
+
+snapshots:
+  - name: snap_customers
+    description: >
+      SCD Type 2 snapshot of customer data.
+      Tracks historical changes to customer segment and country.
+      Enables point-in-time analysis of customer attributes.
+    config:
+      tags: ['scd', 'customer']
+    columns:
+      - name: user_id
+        description: Business key - unique customer identifier
+        data_tests:
+          - not_null
+
+      - name: email
+        description: Customer email address
+
+      - name: signup_date
+        description: Original account creation date
+
+      - name: country
+        description: Customer country (tracked for changes)
+
+      - name: customer_segment
+        description: Customer segment (tracked for changes)
+
+      - name: dbt_valid_from
+        description: Timestamp when this version became active
+
+      - name: dbt_valid_to
+        description: Timestamp when this version was superseded (null if current)
+
+      - name: dbt_scd_id
+        description: Unique identifier for each snapshot record

@@ -1,0 +1,36 @@
+version: 2
+
+snapshots:
+  - name: snap_products
+    description: >
+      SCD Type 2 snapshot of product data.
+      Tracks historical changes to product cost and category.
+      Essential for accurate historical margin calculations.
+    config:
+      tags: ['scd', 'product']
+    columns:
+      - name: product_id
+        description: Business key - unique product identifier
+        data_tests:
+          - not_null
+
+      - name: product_name
+        description: Product display name
+
+      - name: category
+        description: Product category (tracked for changes)
+
+      - name: supplier_id
+        description: Supplier identifier
+
+      - name: cost
+        description: Product cost (tracked for changes)
+
+      - name: dbt_valid_from
+        description: Timestamp when this version became active
+
+      - name: dbt_valid_to
+        description: Timestamp when this version was superseded (null if current)
+
+      - name: dbt_scd_id
+        description: Unique identifier for each snapshot record
