@@ -1,0 +1,34 @@
+version: 2
+
+data_tests:
+  - name: assert_order_items_match_order_total
+    description: >
+      Validates that the sum of order item line totals matches the order total amount.
+      Allows for $1 tolerance to account for rounding differences.
+    config:
+      severity: warn
+      tags: ['data_integrity', 'finance']
+
+  - name: assert_refund_not_greater_than_order
+    description: >
+      Ensures refund amounts do not exceed the original order item total.
+      Allows 10% tolerance to account for shipping refunds.
+    config:
+      severity: error
+      tags: ['data_integrity', 'finance']
+
+  - name: assert_customers_have_valid_orders
+    description: >
+      Verifies all orders reference existing customers in the users table.
+      Catches orphaned orders that would break referential integrity.
+    config:
+      severity: error
+      tags: ['referential_integrity']
+
+  - name: assert_no_orphan_order_items
+    description: >
+      Ensures all order items belong to existing orders.
+      Prevents orphaned line items in the data model.
+    config:
+      severity: error
+      tags: ['referential_integrity']
