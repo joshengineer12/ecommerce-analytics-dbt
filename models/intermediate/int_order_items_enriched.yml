@@ -1,0 +1,54 @@
+version: 2
+
+models:
+  - name: int_order_items_enriched
+    description: >
+      Order line items enriched with product details, order context, and return information.
+      This intermediate model joins order items with products, orders, and returns
+      to create a comprehensive view of each line item.
+
+    columns:
+      - name: order_item_id
+        description: Primary key - unique line item identifier
+        data_tests:
+          - unique
+          - not_null
+
+      - name: order_id
+        description: Foreign key to orders
+
+      - name: product_id
+        description: Foreign key to products
+
+      - name: user_id
+        description: Customer who placed the order
+
+      - name: order_date
+        description: Date the order was placed
+
+      - name: product_name
+        description: Product display name
+
+      - name: category
+        description: Product category
+
+      - name: quantity
+        description: Units ordered
+
+      - name: unit_price
+        description: Price per unit at time of purchase
+
+      - name: gross_amount
+        description: Line total (quantity * unit_price)
+
+      - name: gross_profit
+        description: Revenue minus cost
+
+      - name: is_returned
+        description: Whether this item was returned
+
+      - name: refund_amount
+        description: Refund amount if returned
+
+      - name: net_revenue
+        description: Gross amount minus refunds

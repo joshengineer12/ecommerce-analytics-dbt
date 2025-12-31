@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: int_product_performance
+    description: >
+      Product-level performance metrics including sales, returns, and profitability.
+      Aggregates order item data to provide product analytics.
+
+    columns:
+      - name: product_id
+        description: Primary key - product identifier
+        data_tests:
+          - unique
+          - not_null
+
+      - name: total_units_sold
+        description: Total units sold
+
+      - name: order_count
+        description: Number of orders containing this product
+
+      - name: unique_customers
+        description: Distinct customers who purchased
+
+      - name: total_revenue
+        description: Gross revenue from sales
+
+      - name: net_revenue
+        description: Revenue after refunds
+
+      - name: total_gross_profit
+        description: Total gross profit
+
+      - name: return_count
+        description: Number of units returned
+
+      - name: return_rate
+        description: Return rate as decimal
+
+      - name: quality_issue_pct
+        description: Percentage of returns due to quality issues

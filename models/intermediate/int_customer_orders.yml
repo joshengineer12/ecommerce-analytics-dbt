@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: int_customer_orders
+    description: >
+      Customer-level order aggregations including lifetime metrics.
+      Aggregates order and item data to provide customer purchase history summary.
+
+    columns:
+      - name: user_id
+        description: Primary key - customer identifier
+        data_tests:
+          - unique
+          - not_null
+
+      - name: total_orders
+        description: Total number of orders placed
+
+      - name: completed_orders
+        description: Number of completed orders
+
+      - name: cancelled_orders
+        description: Number of cancelled orders
+
+      - name: total_revenue
+        description: Total revenue from completed orders
+
+      - name: total_net_revenue
+        description: Revenue after refunds
+
+      - name: avg_order_value
+        description: Average order value
+
+      - name: first_order_date
+        description: Date of first order
+
+      - name: last_order_date
+        description: Date of most recent order
+
+      - name: total_returned_items
+        description: Number of items returned
+
+      - name: total_refunds
+        description: Total refund amount

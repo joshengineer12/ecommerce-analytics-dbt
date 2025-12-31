@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: int_orders_enriched
+    description: >
+      Orders enriched with customer context and aggregated line item metrics.
+      Provides order-level view with totals, costs, and return information.
+
+    columns:
+      - name: order_id
+        description: Primary key - unique order identifier
+        data_tests:
+          - unique
+          - not_null
+
+      - name: user_id
+        description: Customer who placed the order
+
+      - name: order_date
+        description: Date the order was placed
+
+      - name: email
+        description: Customer email
+
+      - name: customer_segment
+        description: Customer segment (Premium, Standard, Basic)
+
+      - name: order_status
+        description: Order status (completed, cancelled)
+
+      - name: item_count
+        description: Number of distinct line items
+
+      - name: total_units
+        description: Total quantity ordered
+
+      - name: total_amount
+        description: Order subtotal
+
+      - name: net_revenue
+        description: Revenue after refunds
+
+      - name: has_returns
+        description: Whether order has any returned items
