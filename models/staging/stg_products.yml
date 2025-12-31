@@ -1,0 +1,57 @@
+version: 2
+
+models:
+  - name: stg_products
+    description: >
+      Staged product data with standardized fields and category groupings.
+      Contains product catalog information including pricing and supplier details.
+
+      **Source**: raw_products seed file
+      **Grain**: One row per product
+      **Update Frequency**: Daily batch from inventory system
+
+    config:
+      tags: ['staging', 'product']
+
+    columns:
+      - name: product_id
+        description: Primary key - unique identifier for each product (SKU)
+        data_tests:
+          - unique
+          - not_null
+
+      - name: product_name
+        description: Display name of the product shown to customers
+        data_tests:
+          - not_null
+
+      - name: category
+        description: >
+          Product category from source system.
+          One of: Electronics, Office, Furniture, Home
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['Electronics', 'Office', 'Furniture', 'Home']
+
+      - name: category_group
+        description: >
+          Broader category grouping for high-level reporting.
+          Maps categories to: Tech, Home & Office, Other
+
+      - name: supplier_id
+        description: Foreign key to supplier (supplier dimension not in scope)
+        data_tests:
+          - not_null
+
+      - name: unit_cost
+        description: >
+          Cost to acquire the product from supplier (in USD).
+          Used for margin and profitability calculations.
+        data_tests:
+          - not_null
+          - positive_value:
+              allow_zero: false
+
+      - name: _loaded_at
+        description: Timestamp when the record was loaded into the staging layer

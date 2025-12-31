@@ -1,0 +1,61 @@
+version: 2
+
+models:
+  - name: stg_users
+    description: >
+      Staged user data with cleaned and standardized fields.
+      Contains customer information including demographics and segmentation.
+
+      **Source**: raw_users seed file
+      **Grain**: One row per user
+      **Update Frequency**: Real-time from source system
+
+    config:
+      tags: ['staging', 'pii']
+
+    columns:
+      - name: user_id
+        description: Primary key - unique identifier for each user
+        data_tests:
+          - unique
+          - not_null
+
+      - name: email
+        description: User's email address (PII - handle according to data governance policies)
+        data_tests:
+          - unique
+          - not_null
+          - valid_email
+
+      - name: email_domain
+        description: Domain extracted from user's email address (e.g., 'gmail.com')
+
+      - name: signup_date
+        description: Date when the user created their account
+        data_tests:
+          - not_null
+          - date_not_in_future
+
+      - name: country
+        description: User's country of residence
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['USA', 'Canada', 'UK', 'Australia']
+
+      - name: region
+        description: Geographic region derived from country using get_region macro
+
+      - name: customer_segment
+        description: >
+          Customer tier classification assigned at registration.
+          - Premium: High-value customers with priority support
+          - Standard: Regular customers
+          - Basic: Entry-level customers
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['Premium', 'Standard', 'Basic']
+
+      - name: _loaded_at
+        description: Timestamp when the record was loaded into the staging layer

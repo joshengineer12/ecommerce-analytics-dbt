@@ -1,0 +1,69 @@
+version: 2
+
+models:
+  - name: stg_returns
+    description: >
+      Staged returns data with categorized return reasons.
+      Contains information about returned items and refunds.
+
+      **Source**: raw_returns seed file
+      **Grain**: One row per return transaction
+      **Update Frequency**: Daily batch from returns management system
+
+    config:
+      tags: ['staging', 'transactions', 'returns']
+
+    columns:
+      - name: return_id
+        description: Primary key - unique identifier for each return
+        data_tests:
+          - unique
+          - not_null
+
+      - name: order_item_id
+        description: Foreign key to order items table - the item being returned
+        data_tests:
+          - not_null
+
+      - name: return_date
+        description: Date when the return was processed
+        data_tests:
+          - not_null
+          - date_not_in_future
+
+      - name: return_reason
+        description: >
+          Original reason code for the return:
+          - defective: Product malfunction or defect
+          - changed_mind: Customer decision to return
+          - wrong_item: Incorrect item shipped
+          - damaged_shipping: Damaged during delivery
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['defective', 'changed_mind', 'wrong_item', 'damaged_shipping']
+
+      - name: return_reason_category
+        description: >
+          Categorized return reason for high-level reporting:
+          - Quality Issue: defective, damaged_shipping
+          - Fulfillment Error: wrong_item
+          - Customer Decision: changed_mind
+
+      - name: refund_amount
+        description: Amount refunded to customer (in USD)
+        data_tests:
+          - not_null
+          - positive_value:
+              allow_zero: false
+
+      - name: is_quality_issue
+        description: >
+          Boolean flag indicating if the return was due to a quality issue.
+          True for: defective, damaged_shipping
+
+      - name: return_month
+        description: Return date truncated to month (for monthly aggregations)
+
+      - name: _loaded_at
+        description: Timestamp when the record was loaded into the staging layer

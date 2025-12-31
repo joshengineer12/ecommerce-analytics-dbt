@@ -1,0 +1,57 @@
+version: 2
+
+models:
+  - name: stg_order_items
+    description: >
+      Staged order line items with calculated totals.
+      Contains individual items within each order.
+
+      **Source**: raw_order_items seed file
+      **Grain**: One row per order line item
+      **Update Frequency**: Real-time from e-commerce platform
+
+    config:
+      tags: ['staging', 'transactions']
+
+    columns:
+      - name: order_item_id
+        description: Primary key - unique identifier for each order line item
+        data_tests:
+          - unique
+          - not_null
+
+      - name: order_id
+        description: Foreign key to orders table - parent order
+        data_tests:
+          - not_null
+
+      - name: product_id
+        description: Foreign key to products table - item purchased
+        data_tests:
+          - not_null
+
+      - name: quantity
+        description: Number of units ordered for this line item
+        data_tests:
+          - not_null
+          - positive_value:
+              allow_zero: false
+
+      - name: unit_price
+        description: >
+          Price per unit at time of purchase (in USD).
+          May differ from current product price due to promotions or price changes.
+        data_tests:
+          - not_null
+          - positive_value:
+              allow_zero: false
+
+      - name: line_total
+        description: >
+          Total for this line item calculated as quantity * unit_price.
+          Used for revenue calculations.
+        data_tests:
+          - not_null
+
+      - name: _loaded_at
+        description: Timestamp when the record was loaded into the staging layer

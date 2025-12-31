@@ -1,0 +1,132 @@
+version: 2
+
+sources:
+  - name: ecommerce_raw
+    description: >
+      Raw e-commerce data from the operational database.
+      This source represents the production OLTP system.
+    database: "{{ env_var('DBT_DATABASE', 'ecommerce_analytics') }}"
+    schema: main_raw
+    loader: fivetran  # or whatever ETL tool is used
+
+    freshness:
+      warn_after: {count: 12, period: hour}
+      error_after: {count: 24, period: hour}
+
+    loaded_at_field: _loaded_at  # column used for freshness check
+
+    tables:
+      - name: users
+        description: Raw user/customer data from registration system
+        identifier: raw_users
+        columns:
+          - name: user_id
+            description: Primary key
+            data_tests:
+              - unique
+              - not_null
+
+          - name: email
+            description: User email address
+            data_tests:
+              - unique
+
+          - name: signup_date
+            description: Account creation date
+
+          - name: country
+            description: User's country
+
+          - name: customer_segment
+            description: Marketing segment classification
+
+      - name: products
+        description: Product catalog from inventory system
+        identifier: raw_products
+        columns:
+          - name: product_id
+            description: Primary key
+            data_tests:
+              - unique
+              - not_null
+
+          - name: product_name
+            description: Product display name
+
+          - name: category
+            description: Product category
+
+          - name: supplier_id
+            description: Foreign key to suppliers
+
+          - name: cost
+            description: Product cost
+
+      - name: orders
+        description: Order headers from order management system
+        identifier: raw_orders
+        freshness:
+          warn_after: {count: 6, period: hour}
+          error_after: {count: 12, period: hour}
+        columns:
+          - name: order_id
+            description: Primary key
+            data_tests:
+              - unique
+              - not_null
+
+          - name: user_id
+            description: Foreign key to users
+
+          - name: order_date
+            description: Order placement date
+
+          - name: status
+            description: Order status
+
+          - name: total_amount
+            description: Order total in dollars
+
+      - name: order_items
+        description: Order line items
+        identifier: raw_order_items
+        columns:
+          - name: order_item_id
+            description: Primary key
+            data_tests:
+              - unique
+              - not_null
+
+          - name: order_id
+            description: Foreign key to orders
+
+          - name: product_id
+            description: Foreign key to products
+
+          - name: quantity
+            description: Units ordered
+
+          - name: price
+            description: Unit price at time of purchase
+
+      - name: returns
+        description: Product returns and refunds
+        identifier: raw_returns
+        columns:
+          - name: return_id
+            description: Primary key
+            data_tests:
+              - unique
+              - not_null
+
+          - name: order_item_id
+            description: Foreign key to order items
+
+          - name: return_date
+            description: Return processing date
+
+          - name: return_reason
+            description: Reason for return
+
+          - name: refund_amount
+            description: Refund amount in dollars

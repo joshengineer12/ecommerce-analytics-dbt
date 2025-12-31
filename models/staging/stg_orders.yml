@@ -1,0 +1,74 @@
+version: 2
+
+models:
+  - name: stg_orders
+    description: >
+      Staged order data with derived fields for analysis.
+      Contains order header information including status and totals.
+
+      **Source**: raw_orders seed file
+      **Grain**: One row per order
+      **Update Frequency**: Real-time from e-commerce platform
+
+    config:
+      tags: ['staging', 'transactions']
+
+    columns:
+      - name: order_id
+        description: Primary key - unique identifier for each order
+        data_tests:
+          - unique
+          - not_null
+
+      - name: user_id
+        description: Foreign key to users table - customer who placed the order
+        data_tests:
+          - not_null
+
+      - name: order_date
+        description: Date when the order was placed
+        data_tests:
+          - not_null
+          - date_not_in_future
+
+      - name: order_status
+        description: >
+          Current status of the order:
+          - completed: Order fulfilled and delivered
+          - cancelled: Order was cancelled (total_amount = 0)
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['completed', 'cancelled']
+
+      - name: total_amount
+        description: >
+          Total order amount in USD.
+          Note: Cancelled orders have total_amount = 0
+        data_tests:
+          - not_null
+
+      - name: is_completed
+        description: Boolean flag indicating if order status is 'completed'
+
+      - name: is_cancelled
+        description: Boolean flag indicating if order status is 'cancelled'
+
+      - name: is_high_value_order
+        description: >
+          Boolean flag for orders at or above the high value threshold.
+          Threshold defined by var('high_value_order_threshold') = $200
+
+      - name: order_month
+        description: Order date truncated to month (for monthly aggregations)
+
+      - name: order_week
+        description: Order date truncated to week (for weekly aggregations)
+
+      - name: day_of_week
+        description: >
+          Day of week extracted from order_date.
+          0 = Sunday, 6 = Saturday
+
+      - name: _loaded_at
+        description: Timestamp when the record was loaded into the staging layer
