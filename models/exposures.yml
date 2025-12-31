@@ -1,0 +1,76 @@
+version: 2
+
+exposures:
+  - name: executive_dashboard
+    type: dashboard
+    maturity: high
+    url: https://bi-tool.company.com/dashboards/executive
+    description: >
+      Executive dashboard showing key business metrics including
+      revenue, customer counts, and product performance.
+    depends_on:
+      - fct_orders
+      - dim_customers
+      - mart_product_performance
+      - fct_daily_revenue
+    owner:
+      name: Data Analytics Team
+      email: analytics@company.com
+
+  - name: marketing_segmentation
+    type: dashboard
+    maturity: high
+    url: https://bi-tool.company.com/dashboards/marketing
+    description: >
+      Marketing dashboard for customer segmentation and cohort analysis.
+      Used by the marketing team for campaign targeting.
+    depends_on:
+      - fct_rfm_analysis
+      - fct_customer_cohorts
+      - fct_customer_segments
+      - dim_customers
+    owner:
+      name: Marketing Analytics
+      email: marketing-analytics@company.com
+
+  - name: finance_reports
+    type: application
+    maturity: high
+    description: >
+      Financial reporting application that pulls daily revenue
+      and product profitability data for month-end close.
+    depends_on:
+      - fct_daily_revenue
+      - fct_product_profitability
+      - fct_orders
+    owner:
+      name: Finance Team
+      email: finance@company.com
+
+  - name: product_analytics
+    type: dashboard
+    maturity: medium
+    url: https://bi-tool.company.com/dashboards/product
+    description: >
+      Product performance dashboard tracking sales, returns,
+      and profitability by product and category.
+    depends_on:
+      - mart_product_performance
+      - fct_order_items
+      - fct_product_profitability
+    owner:
+      name: Product Team
+      email: product@company.com
+
+  - name: customer_success_app
+    type: application
+    maturity: medium
+    description: >
+      Customer success tool that uses customer data for
+      churn prediction and intervention triggers.
+    depends_on:
+      - dim_customers
+      - fct_rfm_analysis
+    owner:
+      name: Customer Success
+      email: cs@company.com
