@@ -1,0 +1,39 @@
+version: 2
+
+seeds:
+  - name: raw_orders
+    description: >
+      Order header data from the e-commerce platform.
+      Contains order-level information including status and totals.
+    config:
+      tags: ['raw', 'transactions']
+    columns:
+      - name: order_id
+        description: Unique identifier for each order
+        data_tests:
+          - unique
+          - not_null
+
+      - name: user_id
+        description: Foreign key to the user who placed the order
+        data_tests:
+          - not_null
+
+      - name: order_date
+        description: Date when the order was placed
+        data_tests:
+          - not_null
+
+      - name: status
+        description: >
+          Current order status.
+          completed = fulfilled, cancelled = voided
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['completed', 'cancelled']
+
+      - name: total_amount
+        description: Order total in dollars (0 for cancelled orders)
+        data_tests:
+          - not_null

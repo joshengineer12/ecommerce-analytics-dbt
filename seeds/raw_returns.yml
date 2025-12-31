@@ -1,0 +1,39 @@
+version: 2
+
+seeds:
+  - name: raw_returns
+    description: >
+      Product return data from the returns management system.
+      Contains return reasons and refund amounts.
+    config:
+      tags: ['raw', 'transactions', 'returns']
+    columns:
+      - name: return_id
+        description: Unique identifier for each return
+        data_tests:
+          - unique
+          - not_null
+
+      - name: order_item_id
+        description: Foreign key to the returned order item
+        data_tests:
+          - not_null
+
+      - name: return_date
+        description: Date when the return was processed
+        data_tests:
+          - not_null
+
+      - name: return_reason
+        description: >
+          Reason code for the return.
+          defective, changed_mind, wrong_item, damaged_shipping
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['defective', 'changed_mind', 'wrong_item', 'damaged_shipping']
+
+      - name: refund_amount
+        description: Amount refunded to the customer (in dollars)
+        data_tests:
+          - not_null

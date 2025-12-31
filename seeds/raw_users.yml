@@ -1,0 +1,42 @@
+version: 2
+
+seeds:
+  - name: raw_users
+    description: >
+      Raw user data representing customer registrations.
+      Source: Customer registration system / CRM.
+    config:
+      tags: ['raw', 'pii']
+    columns:
+      - name: user_id
+        description: Unique identifier for each user
+        data_tests:
+          - unique
+          - not_null
+
+      - name: email
+        description: User's email address (PII - handle with care)
+        data_tests:
+          - unique
+          - not_null
+
+      - name: signup_date
+        description: Date when the user created their account
+        data_tests:
+          - not_null
+
+      - name: country
+        description: User's country of residence
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['USA', 'Canada', 'UK', 'Australia']
+
+      - name: customer_segment
+        description: >
+          Marketing segment assigned at registration.
+          Premium, Standard, or Basic tier.
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['Premium', 'Standard', 'Basic']

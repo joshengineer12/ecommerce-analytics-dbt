@@ -1,0 +1,31 @@
+product_id,product_name,category,supplier_id,cost
+101,Wireless Mouse,Electronics,501,12.50
+102,Mechanical Keyboard,Electronics,501,45.00
+103,USB-C Cable,Electronics,502,8.00
+104,Laptop Stand,Office,503,25.00
+105,Notebook Set,Office,504,6.50
+106,Ergonomic Chair,Furniture,505,120.00
+107,Desk Lamp,Furniture,505,18.00
+108,Water Bottle,Home,506,9.00
+109,Coffee Mug,Home,506,7.50
+110,Phone Case,Electronics,502,11.00
+111,Headphones,Electronics,501,35.00
+112,Webcam,Electronics,502,42.00
+113,Monitor,Electronics,501,180.00
+114,Backpack,Office,504,28.00
+115,Pen Set,Office,504,4.50
+116,Whiteboard,Office,503,32.00
+117,Desk Organizer,Office,503,14.00
+118,Standing Desk,Furniture,505,250.00
+119,Bookshelf,Furniture,505,85.00
+120,Table Lamp,Furniture,505,22.00
+121,Yoga Mat,Home,506,15.00
+122,Travel Mug,Home,506,12.00
+123,Phone Charger,Electronics,502,14.00
+124,Tablet Stand,Office,503,19.00
+125,Wireless Charger,Electronics,501,24.00
+126,Bluetooth Speaker,Electronics,501,38.00
+127,Desk Pad,Office,504,16.00
+128,Cable Management Box,Office,503,13.00
+129,Footrest,Furniture,505,29.00
+130,Plant Pot,Home,506,8.50

@@ -1,0 +1,37 @@
+version: 2
+
+seeds:
+  - name: raw_products
+    description: >
+      Product catalog data from the inventory management system.
+      Contains product details and cost information.
+    config:
+      tags: ['raw', 'product']
+    columns:
+      - name: product_id
+        description: Unique identifier for each product
+        data_tests:
+          - unique
+          - not_null
+
+      - name: product_name
+        description: Display name of the product
+        data_tests:
+          - not_null
+
+      - name: category
+        description: Product category classification
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['Electronics', 'Office', 'Furniture', 'Home']
+
+      - name: supplier_id
+        description: Foreign key to supplier (supplier data not included)
+        data_tests:
+          - not_null
+
+      - name: cost
+        description: Product acquisition cost from supplier (in dollars)
+        data_tests:
+          - not_null
