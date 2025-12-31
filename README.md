@@ -39,7 +39,7 @@ A production-ready dbt project for e-commerce analytics, demonstrating data mode
 │  • raw_orders        • stg_orders        • int_customer_     • mart_product_    │
 │  • raw_order_items   • stg_order_items     orders              performance     │
 │  • raw_returns       • stg_returns       • int_product_      • fct_rfm_analysis │
-│                                            performance                           │
+│                                            performance                         │
 └─────────────────────────────────────────────────────────────────────────────────┘
 ```
 
