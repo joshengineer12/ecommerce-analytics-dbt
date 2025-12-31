@@ -1,0 +1,44 @@
+# This file should typically be in ~/.dbt/profiles.yml
+# Including here for reference and portability
+
+ecommerce_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: 'ecommerce_analytics.duckdb'
+      threads: 4
+
+    # Alternative configurations for common warehouses:
+
+    # PostgreSQL example:
+    # dev_postgres:
+    #   type: postgres
+    #   host: localhost
+    #   user: "{{ env_var('DBT_USER') }}"
+    #   password: "{{ env_var('DBT_PASSWORD') }}"
+    #   port: 5432
+    #   dbname: ecommerce_analytics
+    #   schema: dbt_dev
+    #   threads: 4
+
+    # Snowflake example:
+    # prod_snowflake:
+    #   type: snowflake
+    #   account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+    #   user: "{{ env_var('SNOWFLAKE_USER') }}"
+    #   password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+    #   role: TRANSFORMER
+    #   database: ECOMMERCE
+    #   warehouse: TRANSFORM_WH
+    #   schema: ANALYTICS
+    #   threads: 8
+
+    # BigQuery example:
+    # prod_bigquery:
+    #   type: bigquery
+    #   method: service-account
+    #   project: ecommerce-analytics
+    #   dataset: analytics
+    #   threads: 8
+    #   keyfile: "{{ env_var('BIGQUERY_KEYFILE') }}"

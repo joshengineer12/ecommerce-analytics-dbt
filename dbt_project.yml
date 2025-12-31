@@ -1,0 +1,81 @@
+name: 'ecommerce_analytics'
+version: '1.0.0'
+config-version: 2
+
+profile: 'ecommerce_analytics'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+vars:
+  # Date range for filtering (useful for incremental models)
+  start_date: '2023-01-01'
+  end_date: '2023-12-31'
+
+  # Business logic thresholds
+  high_value_order_threshold: 200
+  premium_customer_order_count: 5
+
+models:
+  ecommerce_analytics:
+    +materialized: view
+
+    staging:
+      +materialized: view
+      +schema: staging
+      +tags: ['staging']
+
+    intermediate:
+      +materialized: view
+      +schema: intermediate
+      +tags: ['intermediate']
+
+    marts:
+      +materialized: table
+      +schema: marts
+      core:
+        +tags: ['core', 'marts']
+      finance:
+        +tags: ['finance', 'marts']
+      marketing:
+        +tags: ['marketing', 'marts']
+
+seeds:
+  ecommerce_analytics:
+    +schema: raw
+    raw_users:
+      +column_types:
+        user_id: integer
+        signup_date: date
+    raw_products:
+      +column_types:
+        product_id: integer
+        supplier_id: integer
+        cost: numeric(10,2)
+    raw_orders:
+      +column_types:
+        order_id: integer
+        user_id: integer
+        order_date: date
+        total_amount: numeric(10,2)
+    raw_order_items:
+      +column_types:
+        order_item_id: integer
+        order_id: integer
+        product_id: integer
+        quantity: integer
+        price: numeric(10,2)
+    raw_returns:
+      +column_types:
+        return_id: integer
+        order_item_id: integer
+        return_date: date
+        refund_amount: numeric(10,2)
