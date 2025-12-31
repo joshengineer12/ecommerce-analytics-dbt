@@ -60,7 +60,7 @@ final as (
         r.return_id,
         r.return_date,
         r.return_reason,
-        r.return_category,
+        r.return_reason_category,
         r.is_quality_issue,
         coalesce(r.refund_amount, 0) as refund_amount,
 

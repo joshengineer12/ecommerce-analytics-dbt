@@ -46,7 +46,7 @@ final as (
         quantity,
         unit_price,
         unit_cost,
-        line_total as gross_amount,
+        gross_amount,
 
         -- Profitability
         gross_profit,
@@ -62,12 +62,12 @@ final as (
         is_quality_issue,
 
         -- Net Revenue
-        line_total - coalesce(refund_amount, 0) as net_revenue,
+        net_revenue,
 
         -- Order Context
         order_status,
         is_completed,
-        order_month,
+        {{ date_trunc('month', 'order_date') }} as order_month,
 
         -- Metadata
         current_timestamp as _updated_at

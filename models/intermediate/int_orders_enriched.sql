@@ -64,10 +64,20 @@ final as (
         -- Return Flag
         case when oli.has_returns = 1 then true else false end as has_returns,
 
+        -- Gross Margin
+        case
+            when coalesce(oli.total_amount, 0) > 0
+            then (coalesce(oli.total_gross_profit, 0) / oli.total_amount) * 100
+            else 0
+        end as avg_gross_margin_pct,
+
         -- Date Dimensions
         o.order_month,
         o.order_week,
         o.day_of_week,
+
+        -- Customer Tenure
+        {{ datediff('u.signup_date', 'o.order_date', 'day') }} as days_since_signup,
 
         -- Surrogate Key
         {{ dbt_utils.generate_surrogate_key(['o.order_id', 'o.user_id']) }} as order_surrogate_key,
