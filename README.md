@@ -784,7 +784,7 @@ For deeper technical details, see the following documentation:
 
 ### Quick Links
 
-- **Run CI locally**: `act -j dbt-build` (requires [act](https://github.com/nektos/act))
+- **CI/CD**: Runs automatically on push/PR via GitHub Actions
 - **Generate lineage**: `dbt docs generate && dbt docs serve`
 - **View execution stats**: Check `target/run_results.json` after builds
 
