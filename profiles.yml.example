@@ -1,5 +1,8 @@
-# This file should typically be in ~/.dbt/profiles.yml
-# Including here for reference and portability
+# EXAMPLE profiles.yml - Copy to ~/.dbt/profiles.yml
+# Or copy to ./profiles.yml for local development
+#
+# For DuckDB (default, no setup needed):
+#   cp profiles.yml.example profiles.yml
 
 ecommerce_analytics:
   target: dev

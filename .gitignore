@@ -4,6 +4,12 @@ dbt_packages/
 logs/
 dbt_modules/
 
+# dbt Cloud user file (machine-specific)
+.user.yml
+
+# Local profiles (use profiles.yml.example as template)
+profiles.yml
+
 # Database files
 *.duckdb
 *.db

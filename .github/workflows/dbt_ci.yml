@@ -57,6 +57,9 @@ jobs:
           pip install --upgrade pip
           pip install dbt-duckdb
 
+      - name: Setup profiles
+        run: cp profiles.yml.example profiles.yml
+
       - name: Install dbt packages
         run: dbt deps
 
@@ -115,8 +118,10 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install dependencies
-        run: |
-          pip install dbt-duckdb
+        run: pip install dbt-duckdb
+
+      - name: Setup profiles
+        run: cp profiles.yml.example profiles.yml
 
       - name: Install dbt packages
         run: dbt deps
