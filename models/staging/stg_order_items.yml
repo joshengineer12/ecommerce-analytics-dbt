@@ -24,11 +24,17 @@ models:
         description: Foreign key to orders table - parent order
         data_tests:
           - not_null
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
 
       - name: product_id
         description: Foreign key to products table - item purchased
         data_tests:
           - not_null
+          - relationships:
+              to: ref('stg_products')
+              field: product_id
 
       - name: quantity
         description: Number of units ordered for this line item

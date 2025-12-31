@@ -25,7 +25,7 @@ models:
       tags: ['marts', 'marketing', 'fact', 'segment']
 
     columns:
-      - name: original_segment
+      - name: customer_segment
         description: Customer segment from registration (Premium/Standard/Basic)
 
       - name: customer_tier

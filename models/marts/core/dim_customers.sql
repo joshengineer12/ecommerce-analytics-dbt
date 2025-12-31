@@ -63,6 +63,7 @@ final as (
         -- Additional Metrics
         coalesce(co.total_orders, 0) as lifetime_orders,
         coalesce(co.cancelled_orders, 0) as cancelled_orders,
+        coalesce(co.high_value_orders, 0) as high_value_orders,
         coalesce(co.total_net_revenue, 0) as total_net_revenue,
         coalesce(co.total_gross_profit, 0) as total_gross_profit,
         coalesce(co.avg_items_per_order, 0) as avg_items_per_order,
@@ -74,8 +75,8 @@ final as (
 
         -- Derived Customer Tier (based on behavior)
         case
-            when co.total_revenue >= 500 and co.completed_orders >= 3 then 'VIP'
-            when co.total_revenue >= 200 or co.completed_orders >= 2 then 'Loyal'
+            when co.total_revenue >= {{ var('vip_revenue_threshold') }} and co.completed_orders >= {{ var('vip_order_threshold') }} then 'VIP'
+            when co.total_revenue >= {{ var('loyal_revenue_threshold') }} or co.completed_orders >= {{ var('loyal_order_threshold') }} then 'Loyal'
             when co.completed_orders >= 1 then 'Active'
             else 'New'
         end as customer_tier,
@@ -83,8 +84,8 @@ final as (
         -- Activity Status
         case
             when co.first_order_date is null then 'Never Ordered'
-            when co.last_order_date >= current_date - interval '30 days' then 'Active'
-            when co.last_order_date >= current_date - interval '90 days' then 'At Risk'
+            when co.last_order_date >= current_date - interval '{{ var('active_days_threshold') }} days' then 'Active'
+            when co.last_order_date >= current_date - interval '{{ var('at_risk_days_threshold') }} days' then 'At Risk'
             else 'Churned'
         end as activity_status,
 

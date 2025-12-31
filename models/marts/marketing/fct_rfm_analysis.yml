@@ -46,7 +46,7 @@ models:
       - name: region
         description: Customer region
 
-      - name: original_segment
+      - name: customer_segment
         description: Registration-time segment
 
       - name: recency_days

@@ -1,9 +1,3 @@
-{{
-    config(
-        materialized='view'
-    )
-}}
-
 with orders_enriched as (
     select * from {{ ref('int_orders_enriched') }}
 ),
@@ -21,6 +15,7 @@ customer_orders as (
         count(distinct order_id) as total_orders,
         count(distinct case when is_completed then order_id end) as completed_orders,
         count(distinct case when is_cancelled then order_id end) as cancelled_orders,
+        count(distinct case when is_completed and is_high_value_order then order_id end) as high_value_orders,
 
         -- Revenue Metrics
         sum(case when is_completed then total_amount else 0 end) as total_revenue,
@@ -60,6 +55,7 @@ final as (
         co.total_orders,
         co.completed_orders,
         co.cancelled_orders,
+        co.high_value_orders,
 
         -- Revenue Metrics
         co.total_revenue,

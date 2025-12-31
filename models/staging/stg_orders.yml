@@ -24,6 +24,9 @@ models:
         description: Foreign key to users table - customer who placed the order
         data_tests:
           - not_null
+          - relationships:
+              to: ref('stg_users')
+              field: user_id
 
       - name: order_date
         description: Date when the order was placed

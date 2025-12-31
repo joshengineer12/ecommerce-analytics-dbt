@@ -24,6 +24,16 @@ vars:
   high_value_order_threshold: 200
   premium_customer_order_count: 5
 
+  # Customer tier thresholds
+  vip_revenue_threshold: 500
+  vip_order_threshold: 3
+  loyal_revenue_threshold: 200
+  loyal_order_threshold: 2
+
+  # Activity status thresholds (in days)
+  active_days_threshold: 30
+  at_risk_days_threshold: 90
+
 models:
   ecommerce_analytics:
     +materialized: view

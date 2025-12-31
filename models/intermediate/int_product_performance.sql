@@ -1,9 +1,3 @@
-{{
-    config(
-        materialized='view'
-    )
-}}
-
 with order_items_enriched as (
     select * from {{ ref('int_order_items_enriched') }}
     where is_completed = true  -- Only completed orders

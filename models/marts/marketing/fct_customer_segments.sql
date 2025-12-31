@@ -41,7 +41,7 @@ segment_metrics as (
 
         -- Customer Quality
         sum(case when is_repeat_customer then 1 else 0 end) as repeat_customers,
-        0 as high_value_orders  -- simplified since column doesn't exist
+        sum(high_value_orders) as high_value_orders
 
     from customers
     group by 1, 2, 3, 4
@@ -52,20 +52,12 @@ final as (
         *,
 
         -- Derived Metrics
-        case
-            when customer_count > 0 then
-                (repeat_customers::float / customer_count) * 100
-            else 0
-        end as repeat_customer_pct,
+        {{ safe_divide('repeat_customers', 'customer_count') }} * 100 as repeat_customer_pct,
 
-        case
-            when total_revenue > 0 then
-                (total_refunds / total_revenue) * 100
-            else 0
-        end as refund_rate_pct,
+        {{ safe_divide('total_refunds', 'total_revenue') }} * 100 as refund_rate_pct,
 
         -- Customer Lifetime Value Proxy
-        total_net_revenue / nullif(customer_count, 0) as avg_customer_ltv,
+        {{ safe_divide('total_net_revenue', 'customer_count') }} as avg_customer_ltv,
 
         -- Metadata
         current_timestamp as _updated_at
