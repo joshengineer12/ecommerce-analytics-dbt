@@ -1,0 +1,113 @@
+version: 2
+
+models:
+  - name: fct_rfm_analysis
+    description: >
+      RFM (Recency, Frequency, Monetary) customer segmentation model.
+      Provides actionable customer segments for targeted marketing campaigns.
+
+      **Grain**: One row per customer with purchase history
+      **Materialization**: Table
+      **Update Frequency**: Daily
+      **Filter**: Only customers with at least one completed order
+
+      ## Business Context
+      RFM is a proven customer segmentation technique that scores customers
+      on three dimensions:
+      - **Recency**: How recently did they purchase? (lower is better)
+      - **Frequency**: How often do they purchase? (higher is better)
+      - **Monetary**: How much do they spend? (higher is better)
+
+      Each dimension is scored 1-5 using quintiles, creating segments like
+      "Champions" (555) or "At Risk" (high frequency but low recency).
+
+      ## Key Use Cases
+      - Email campaign targeting
+      - Churn prevention programs
+      - VIP identification
+      - Win-back campaigns
+
+    config:
+      tags: ['marts', 'marketing', 'fact', 'rfm', 'segmentation']
+
+    columns:
+      - name: customer_id
+        description: Primary key - customer identifier
+        data_tests:
+          - unique
+          - not_null
+
+      - name: email
+        description: Customer email for campaign targeting
+
+      - name: country
+        description: Customer country
+
+      - name: region
+        description: Customer region
+
+      - name: original_segment
+        description: Registration-time segment
+
+      - name: recency_days
+        description: >
+          Days since customer's last order.
+          Lower values indicate more recent activity.
+
+      - name: frequency
+        description: >
+          Total number of completed orders.
+          Higher values indicate more engaged customers.
+
+      - name: monetary
+        description: >
+          Total lifetime revenue from customer (USD).
+          Higher values indicate higher value customers.
+
+      - name: recency_score
+        description: >
+          Recency quintile score (1-5).
+          5 = most recent (best), 1 = least recent (worst)
+
+      - name: frequency_score
+        description: >
+          Frequency quintile score (1-5).
+          5 = highest frequency (best), 1 = lowest frequency
+
+      - name: monetary_score
+        description: >
+          Monetary quintile score (1-5).
+          5 = highest spend (best), 1 = lowest spend
+
+      - name: rfm_total_score
+        description: >
+          Sum of R + F + M scores (3-15).
+          Quick proxy for overall customer value.
+
+      - name: rfm_segment
+        description: >
+          Three-digit RFM code (e.g., "555", "211").
+          Concatenation of recency, frequency, monetary scores.
+
+      - name: rfm_customer_segment
+        description: >
+          Human-readable segment name based on RFM scores:
+          - Champions: Recent, frequent, high spend (R>=4, F>=4, M>=4)
+          - Loyal Customers: Recent and frequent (R>=4, F>=3)
+          - New Customers: Recent but low frequency (R>=4, F<=2)
+          - Potential Loyalists: Good across the board (R>=3, F>=3, M>=3)
+          - Big Spenders: Recent with high spend (R>=3, M>=4)
+          - At Risk: Not recent but historically frequent (R<=2, F>=4)
+          - Hibernating: Not recent, moderate history (R<=2, F>=2)
+          - Lost: Not recent, low engagement (R<=2, F<=2)
+
+      - name: recommended_action
+        description: >
+          Suggested marketing action for this customer's segment.
+          Examples:
+          - Champions: "Reward them, make them brand advocates"
+          - At Risk: "Send personalized reactivation campaigns"
+          - Lost: "Revive interest with aggressive offers"
+
+      - name: _updated_at
+        description: Timestamp of last model refresh

@@ -1,0 +1,99 @@
+version: 2
+
+models:
+  - name: fct_customer_segments
+    description: >
+      Aggregated metrics by customer segment dimensions.
+      Provides segment-level insights for marketing strategy and
+      resource allocation decisions.
+
+      **Grain**: One row per unique combination of segment dimensions
+      **Materialization**: Table
+      **Update Frequency**: Daily
+
+      ## Business Context
+      Supports segment comparison and targeting decisions. Helps identify
+      high-value segments and optimization opportunities.
+
+      ## Segment Dimensions
+      - original_segment: Registration-time segment
+      - customer_tier: Behavioral tier
+      - region: Geographic region
+      - activity_status: Recency-based status
+
+    config:
+      tags: ['marts', 'marketing', 'fact', 'segment']
+
+    columns:
+      - name: original_segment
+        description: Customer segment from registration (Premium/Standard/Basic)
+
+      - name: customer_tier
+        description: Behavioral tier (VIP/Loyal/Active/New)
+
+      - name: region
+        description: Geographic region
+
+      - name: activity_status
+        description: Activity status (Active/At Risk/Churned/Never Ordered)
+
+      - name: customer_count
+        description: Number of customers in this segment combination
+
+      - name: total_orders
+        description: Total orders from segment
+
+      - name: completed_orders
+        description: Completed orders from segment
+
+      - name: avg_orders_per_customer
+        description: Average orders per customer in segment
+
+      - name: total_revenue
+        description: Gross revenue from segment (USD)
+
+      - name: total_net_revenue
+        description: Net revenue from segment (USD)
+
+      - name: avg_revenue_per_customer
+        description: Average revenue per customer (USD)
+
+      - name: avg_order_value
+        description: Average order value in segment (USD)
+
+      - name: total_gross_profit
+        description: Total gross profit from segment (USD)
+
+      - name: avg_margin_pct
+        description: Average margin percentage
+
+      - name: total_returns
+        description: Total items returned
+
+      - name: total_refunds
+        description: Total refund amount (USD)
+
+      - name: avg_return_rate_pct
+        description: Average return rate in segment
+
+      - name: repeat_customers
+        description: Customers with more than one order
+
+      - name: high_value_orders
+        description: Orders meeting high value threshold
+
+      - name: repeat_customer_pct
+        description: >
+          Percentage of customers who are repeat buyers.
+          Key metric for segment quality.
+
+      - name: refund_rate_pct
+        description: Refunds as percentage of revenue
+
+      - name: avg_customer_ltv
+        description: >
+          Average customer lifetime value for segment.
+          Calculated as: total_net_revenue / customer_count
+
+      - name: _updated_at
+        description: Timestamp of last model refresh
