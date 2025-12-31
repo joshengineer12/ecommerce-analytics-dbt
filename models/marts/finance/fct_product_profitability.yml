@@ -1,0 +1,100 @@
+version: 2
+
+models:
+  - name: fct_product_profitability
+    description: >
+      Monthly product profitability analysis enabling margin tracking
+      and inventory optimization decisions.
+
+      **Grain**: One row per product per month
+      **Materialization**: Table
+      **Update Frequency**: Daily (accumulates within month)
+
+      ## Business Context
+      Supports product portfolio management, pricing decisions, and
+      vendor negotiations. Identifies margin trends and problem products.
+
+      ## Key Metrics
+      - Gross and net margin by product
+      - ROI calculation
+      - Return rate tracking over time
+
+    config:
+      tags: ['marts', 'finance', 'fact', 'product']
+
+    columns:
+      - name: product_id
+        description: Product identifier (composite key with month_id)
+        data_tests:
+          - not_null
+
+      - name: month_id
+        description: Month (composite key with product_id)
+        data_tests:
+          - not_null
+
+      - name: product_name
+        description: Product name (denormalized)
+
+      - name: category
+        description: Product category
+
+      - name: category_group
+        description: Product category group
+
+      - name: unit_cost
+        description: Product cost from supplier (USD)
+
+      - name: items_sold
+        description: Number of line items sold
+
+      - name: units_sold
+        description: Total units sold
+
+      - name: order_count
+        description: Distinct orders containing product
+
+      - name: unique_customers
+        description: Distinct customers who purchased
+
+      - name: gross_revenue
+        description: Total revenue before refunds (USD)
+
+      - name: net_revenue
+        description: Revenue after refunds (USD)
+
+      - name: total_cost
+        description: Total product cost (unit_cost * units) (USD)
+
+      - name: gross_profit
+        description: Revenue minus product cost (USD)
+
+      - name: avg_margin_pct
+        description: Average gross margin across sales
+
+      - name: net_margin_pct
+        description: Net margin (gross_profit / gross_revenue)
+
+      - name: return_count
+        description: Number of items returned
+
+      - name: refund_amount
+        description: Total refunds (USD)
+
+      - name: return_rate_pct
+        description: Returns as percentage of items sold
+
+      - name: roi_pct
+        description: >
+          Return on investment percentage.
+          Calculated as: ((revenue - cost) / cost) * 100
+          Key metric for inventory investment decisions.
+
+      - name: _updated_at
+        description: Timestamp of last model refresh
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - product_id
+            - month_id

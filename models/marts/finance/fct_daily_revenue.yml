@@ -1,0 +1,89 @@
+version: 2
+
+models:
+  - name: fct_daily_revenue
+    description: >
+      Daily revenue metrics for financial reporting and trend analysis.
+      Aggregates order data by day with running totals and moving averages.
+
+      **Grain**: One row per calendar day with orders
+      **Materialization**: Table
+      **Update Frequency**: Daily
+
+      ## Business Context
+      Primary model for daily financial reporting. Supports P&L tracking,
+      trend identification, and forecasting. Includes cumulative and
+      rolling metrics for executive dashboards.
+
+      ## Key Features
+      - Running cumulative revenue
+      - 7-day moving average for smoothing
+      - Refund and return tracking
+
+    config:
+      tags: ['marts', 'finance', 'fact', 'daily']
+
+    columns:
+      - name: date_id
+        description: Primary key - calendar date
+        data_tests:
+          - unique
+          - not_null
+
+      - name: order_count
+        description: Number of orders placed on this date
+
+      - name: unique_customers
+        description: Distinct customers who ordered
+
+      - name: gross_revenue
+        description: Total order amounts before refunds (USD)
+
+      - name: total_refunds
+        description: Total refunds processed (USD)
+
+      - name: net_revenue
+        description: Gross revenue minus refunds (USD)
+
+      - name: gross_profit
+        description: Total gross profit (USD)
+
+      - name: avg_order_margin_pct
+        description: Average order margin percentage
+
+      - name: total_items
+        description: Total line items ordered
+
+      - name: total_units
+        description: Total units ordered
+
+      - name: avg_order_value
+        description: Average order value (USD)
+
+      - name: high_value_order_count
+        description: Orders meeting high value threshold
+
+      - name: high_value_revenue
+        description: Revenue from high value orders (USD)
+
+      - name: orders_with_returns
+        description: Orders with at least one return
+
+      - name: high_value_order_pct
+        description: Percentage of orders that are high value
+
+      - name: refund_rate_pct
+        description: Refunds as percentage of gross revenue
+
+      - name: cumulative_revenue
+        description: >
+          Running total of net revenue from start of period.
+          Useful for tracking against targets.
+
+      - name: revenue_7day_avg
+        description: >
+          7-day rolling average of net revenue.
+          Smooths daily volatility for trend analysis.
+
+      - name: _updated_at
+        description: Timestamp of last model refresh
