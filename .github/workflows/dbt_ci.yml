@@ -1,0 +1,238 @@
+name: dbt CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run daily at 6 AM UTC for production freshness checks
+    - cron: '0 6 * * *'
+
+env:
+  DBT_PROFILES_DIR: ./
+  PYTHON_VERSION: '3.10'
+
+jobs:
+  # ============================================
+  # Code Quality Checks
+  # ============================================
+  lint:
+    name: SQL Linting & Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install SQLFluff
+        run: pip install sqlfluff sqlfluff-templater-dbt
+
+      - name: Lint SQL files
+        run: sqlfluff lint models/ --dialect duckdb
+        continue-on-error: true  # Warning only for now
+
+  # ============================================
+  # dbt Build & Test
+  # ============================================
+  dbt-build:
+    name: dbt Build & Test
+    runs-on: ubuntu-latest
+    needs: lint
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install dbt-duckdb
+
+      - name: Install dbt packages
+        run: dbt deps
+
+      - name: Verify dbt project
+        run: dbt debug
+
+      - name: Compile dbt models
+        run: dbt compile
+
+      - name: Run dbt seed
+        run: dbt seed
+
+      - name: Run dbt models
+        run: dbt run
+
+      - name: Run dbt tests
+        run: dbt test
+
+      - name: Run dbt snapshots
+        run: dbt snapshot
+
+      - name: Generate documentation
+        run: dbt docs generate
+
+      - name: Upload dbt artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dbt-artifacts
+          path: |
+            target/manifest.json
+            target/run_results.json
+            target/catalog.json
+          retention-days: 7
+
+      - name: Upload documentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: dbt-docs
+          path: target/
+          retention-days: 30
+
+  # ============================================
+  # Data Quality Validation
+  # ============================================
+  data-quality:
+    name: Data Quality Checks
+    runs-on: ubuntu-latest
+    needs: dbt-build
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          pip install dbt-duckdb
+
+      - name: Install dbt packages
+        run: dbt deps
+
+      - name: Run full build
+        run: dbt build
+
+      - name: Run source freshness checks
+        run: dbt source freshness
+        continue-on-error: true  # Sources may not have freshness defined
+
+      - name: Validate critical models
+        run: |
+          dbt test --select tag:critical
+        continue-on-error: true
+
+  # ============================================
+  # Documentation Deployment (Main branch only)
+  # ============================================
+  deploy-docs:
+    name: Deploy Documentation
+    runs-on: ubuntu-latest
+    needs: dbt-build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: pip install dbt-duckdb
+
+      - name: Install dbt packages
+        run: dbt deps
+
+      - name: Build project
+        run: dbt build
+
+      - name: Generate docs
+        run: dbt docs generate
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: target/
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  # ============================================
+  # Performance Benchmarking
+  # ============================================
+  benchmark:
+    name: Performance Benchmark
+    runs-on: ubuntu-latest
+    needs: dbt-build
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: pip install dbt-duckdb
+
+      - name: Install dbt packages
+        run: dbt deps
+
+      - name: Run benchmark build
+        run: |
+          echo "## Performance Benchmark Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          start_time=$(date +%s.%N)
+          dbt build 2>&1 | tee build_output.txt
+          end_time=$(date +%s.%N)
+          duration=$(echo "$end_time - $start_time" | bc)
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Total Build Time | ${duration}s |" >> $GITHUB_STEP_SUMMARY
+          echo "| Models | $(grep -c 'OK created' build_output.txt || echo 0) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests Passed | $(grep -c 'PASS' build_output.txt || echo 0) |" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================
+  # Slack Notification (Optional)
+  # ============================================
+  notify:
+    name: Notify on Failure
+    runs-on: ubuntu-latest
+    needs: [dbt-build, data-quality]
+    if: failure()
+
+    steps:
+      - name: Send Slack notification
+        run: |
+          echo "Build failed - notification would be sent here"
+          # Uncomment and configure for actual Slack notifications:
+          # curl -X POST -H 'Content-type: application/json' \
+          #   --data '{"text":"dbt build failed on ${{ github.ref }}"}' \
+          #   ${{ secrets.SLACK_WEBHOOK_URL }}

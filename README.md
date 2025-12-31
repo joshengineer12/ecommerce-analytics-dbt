@@ -16,6 +16,7 @@ A production-ready dbt project for e-commerce analytics, demonstrating data mode
 - [Sample Query Outputs](#sample-query-outputs)
 - [Design Decisions](#design-decisions)
 - [Assumptions](#assumptions)
+- [Additional Documentation](#additional-documentation)
 
 ---
 
@@ -756,17 +757,36 @@ Approximately 5 hours for complete implementation including:
 
 ### What I Would Improve With More Time
 
-1. **CI/CD Pipeline**: Add GitHub Actions for automated testing
+1. ~~**CI/CD Pipeline**: Add GitHub Actions for automated testing~~ ✅ Implemented
 2. **Data Contracts**: Implement dbt contracts for schema enforcement
 3. **Metrics Layer**: Add semantic layer with dbt metrics
 4. **More Snapshots**: Track order status changes over time
-5. **Performance Benchmarking**: Document query execution times
+5. ~~**Performance Benchmarking**: Document query execution times~~ ✅ Implemented
 
 ### Challenges and Solutions
 
 1. **Late-Arriving Returns**: Solved with 3-day lookback window in incremental models
 2. **Window Functions in Incremental**: For fct_daily_revenue, combined existing data with new data before calculating cumulative metrics
 3. **Column Naming**: Aligned output columns with expected format in assessment
+
+---
+
+## Additional Documentation
+
+For deeper technical details, see the following documentation:
+
+| Document | Description |
+|----------|-------------|
+| [CI/CD Workflows](.github/workflows/dbt_ci.yml) | GitHub Actions for automated testing, deployment, and Slim CI |
+| [Performance Guide](docs/PERFORMANCE.md) | Benchmarking results, optimization techniques, scaling recommendations |
+| [Data Lineage](docs/DATA_LINEAGE.md) | Visual lineage diagrams, critical path analysis, impact analysis |
+| [dbt Cloud Guide](docs/DBT_CLOUD.md) | Cloud-specific features, job configuration, semantic layer setup |
+
+### Quick Links
+
+- **Run CI locally**: `act -j dbt-build` (requires [act](https://github.com/nektos/act))
+- **Generate lineage**: `dbt docs generate && dbt docs serve`
+- **View execution stats**: Check `target/run_results.json` after builds
 
 ---
 

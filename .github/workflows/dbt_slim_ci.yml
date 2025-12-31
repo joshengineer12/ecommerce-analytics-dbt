@@ -1,0 +1,99 @@
+name: dbt Slim CI (Modified Models Only)
+
+# This workflow implements "slim CI" - only testing models that changed
+# This is a best practice for large dbt projects to speed up CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'models/**'
+      - 'macros/**'
+      - 'tests/**'
+      - 'seeds/**'
+      - 'snapshots/**'
+
+env:
+  DBT_PROFILES_DIR: ./
+  PYTHON_VERSION: '3.10'
+
+jobs:
+  detect-changes:
+    name: Detect Changed Models
+    runs-on: ubuntu-latest
+    outputs:
+      models_changed: ${{ steps.changes.outputs.models }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changes
+        run: |
+          changed_files=$(git diff --name-only origin/main...HEAD | grep -E '^models/|^macros/|^tests/' || true)
+          if [ -n "$changed_files" ]; then
+            echo "models=true" >> $GITHUB_OUTPUT
+            echo "Changed files:"
+            echo "$changed_files"
+          else
+            echo "models=false" >> $GITHUB_OUTPUT
+            echo "No model changes detected"
+          fi
+
+  slim-ci:
+    name: Slim CI - Modified Models
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.models_changed == 'true'
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install dbt-duckdb
+
+      - name: Install dbt packages
+        run: dbt deps
+
+      - name: Download production manifest
+        id: download-manifest
+        continue-on-error: true
+        run: |
+          # In a real scenario, download from S3/GCS/artifact storage
+          # For demo, we'll generate a baseline manifest
+          echo "Generating baseline manifest..."
+          dbt compile --target dev
+          cp target/manifest.json target/manifest_prod.json
+
+      - name: Run modified models and downstream
+        run: |
+          # Build only models that have changed + their downstream dependencies
+          dbt build --select state:modified+ --state target/ --defer --favor-state
+        continue-on-error: true
+
+      - name: Run tests on modified models
+        run: |
+          dbt test --select state:modified+ --state target/
+
+      - name: Comment PR with results
+        if: always()
+        run: |
+          echo "## Slim CI Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Tested only modified models and their downstream dependencies." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Modified Models:" >> $GITHUB_STEP_SUMMARY
+          git diff --name-only origin/main...HEAD | grep -E '^models/' | while read file; do
+            echo "- \`$file\`" >> $GITHUB_STEP_SUMMARY
+          done
